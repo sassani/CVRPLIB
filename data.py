@@ -33,11 +33,9 @@ def read_vrp(path:str):
         dim = meta_data['dimension']
         data['NODE_COORD'] = temp[0:meta_data['dimension']]
         data['DEMAND'] = temp[dim+1:2*dim+1]
-        meta_data['depots'] = temp[2*dim+1:3*dim+1][1:-2]
-        # meta_data['depots'] = temp[2*dim+1:3*dim+1][1:-2].astype(int)
+        meta_data['depots'] = list(map(lambda s: s.replace('\t','') , temp[2*dim+1:3*dim+1][1:-2]))
         data = pd.DataFrame(data)
         data['ID'] = data.apply(lambda s: (s['NODE_COORD'].split('\t'))[0], axis=1)
-        # data['ID'] = data.apply(lambda s: (s['NODE_COORD'].split('\t'))[0], axis=1).astype(int)
         data['NODE_COORD'] =  data.apply(lambda s: tuple(np.array(s['NODE_COORD'].split('\t'))[1:3].astype(float)), axis=1)
         data['DEMAND'] =  data.apply(lambda s: s['DEMAND'].split('\t')[1], axis=1)
         data['IS_DEPOT'] = data.apply(lambda s: True if s['ID'] in meta_data['depots'] else False, axis=1)
@@ -45,9 +43,22 @@ def read_vrp(path:str):
 
     return (data, meta_data)
 
+def create_random_grid(width:int=10, height:int=10, min:int=1, max:int=100):
+        return np.random.choice(np.arange(min,max+1), size=(width,height))
+
+def create_random_vrp(width:int=10, height:int=10, min:int=1, max:int=100):
+        demands = create_random_grid(width, height, min, max)
+
+
+
+
 
 if __name__ == '__main__':
-    data, meta_data = read_vrp('sample_data/X-n1001-k43.vrp')
-    print(data)
-    print(meta_data)
+    # data, meta_data = read_vrp('sample_data/X-n1001-k43.vrp')
+    # print(data)
+    # print(meta_data)
+
+    g = create_random_grid(10,10,10,20)
+    # g = Generators.create_random_grid()
+    print(g)
 
