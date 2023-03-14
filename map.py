@@ -5,16 +5,23 @@ from node import Node
 import networkx as nx
 from scipy.spatial import Voronoi
 import distance as dist
+from data import read_vrp
 
 
 class Map:
-    def __init__(self, df_nodes: pd.DataFrame, info, df_distances: pd.DataFrame = None) -> None:
-        self.info = info
+    def __init__(self) -> None:
+            self.nodes = []
+            self.distances = None
+
+    def create_map_by_vrp(self, path:str):
+        nodes, meta_data = read_vrp(path)
+        self.info = meta_data
         self.nodes = []
-        self.create_nodes(df_nodes)
-        self.distances = df_distances
-        if (df_distances == None):
-            self.distances = dist.calculate_euclidean(self.nodes)
+        self.create_nodes(nodes)
+        self.distances = dist.calculate_euclidean(self.nodes)
+
+    def create_map_by_distances(self, distances):
+         pass
 
     def create_nodes(self, df: pd.DataFrame):
         for item in df.iterrows():
@@ -28,8 +35,8 @@ class Map:
 
 if __name__ == '__main__':
     from data import read_vrp
-    data, meta_data = read_vrp('X-n5.vrp')
-    map = Map(data, meta_data)
+    map = Map()
+    map.create_map_by_vrp('sample_data/X-n5.vrp')
     # map.calculate_euclidean()
     # map.distances = Map.calculate_euclidean(map.nodes)
     print(map.distances)

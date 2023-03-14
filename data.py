@@ -47,7 +47,7 @@ def read_vrp(path:str):
 
 
 if __name__ == '__main__':
-    data, meta_data = read_vrp('X-n1001-k43.vrp')
+    data, meta_data = read_vrp('sample_data/X-n1001-k43.vrp')
     print(data)
     print(meta_data)
 
