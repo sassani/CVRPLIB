@@ -5,7 +5,7 @@ from node import Node
 import networkx as nx
 from scipy.spatial import Voronoi
 import distance as dist
-from data import read_vrp
+from data import read_file
 
 
 class Map:
@@ -13,8 +13,15 @@ class Map:
             self.nodes = []
             self.distances = None
 
-    def create_map_by_vrp(self, path:str):
-        nodes, meta_data = read_vrp(path)
+    # def create_map_by_vrp(self, path:str):
+    #     nodes, meta_data = _read_vrp(path)
+    #     self.info = meta_data
+    #     self.nodes = []
+    #     self.create_nodes(nodes)
+    #     self.distances = dist.calculate_euclidean(self.nodes)
+
+    def create_map_from_file(self, path:str, type:str):
+        nodes, meta_data = read_file(path, type)
         self.info = meta_data
         self.nodes = []
         self.create_nodes(nodes)
@@ -34,9 +41,9 @@ class Map:
 
 
 if __name__ == '__main__':
-    from data import read_vrp
+    print('Running MAP class...')
     map = Map()
-    map.create_map_by_vrp('sample_data/X-n5.vrp')
+    map.create_map_from_file('sample_data/X-n5.vrp', 'cvrp')
     # map.calculate_euclidean()
     # map.distances = Map.calculate_euclidean(map.nodes)
     print(map.distances)

@@ -3,7 +3,14 @@ import numpy as np
 import pandas as pd
 
 
-def read_vrp(path:str):
+def read_file(path:str, type:str):
+     match type:
+          case 'cvrp':
+               return _read_vrp(path)
+          case _:
+               pass
+
+def _read_vrp(path:str):
     meta_data = {}
     data = {}
     with open(path, 'r') as f:
