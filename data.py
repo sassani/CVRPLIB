@@ -1,33 +1,25 @@
+from io import TextIOWrapper
 import re
 import numpy as np
 import pandas as pd
 
 
-def read_file(path:str, type:str):
+def read_file(path:str, type:str)->tuple([pd.DataFrame, dict]):
      match type:
           case 'cvrp':
-               return _read_vrp(path)
+               return _read_cvrp(path)
+          case 'dist':
+               return _read_distance(path)
           case _:
                pass
 
-def _read_vrp(path:str):
-    meta_data = {}
+def _read_cvrp(path:str)->tuple([pd.DataFrame, dict]):
     data = {}
     with open(path, 'r') as f:
-        # Read meta data:
-        while True:
-            line = f.readline().rstrip('\n')
-            key_val = line.split(':')
-            if(len(key_val) < 2):  # End of meta data section
-                break
-            key = re.sub(r"\s+", "", key_val[0])
-            string_value = re.search(r"(\".+\")", key_val[1])
-            if string_value:
-                value = string_value.group().replace("\"", "")
-            else:
-                value = re.sub(r"\s+", "", key_val[1])
-            meta_data[key.lower()] = value
-
+        # Read meta data (if any):
+        meta_data = _get_metadata(f)
+    #
+        meta_data['filepath'] = path.split('.')[0]
         meta_data['name'] = meta_data.get('name', '')
         meta_data['comment'] = meta_data.get('comment', '')
         meta_data['type'] = meta_data.get('type', '')
@@ -38,7 +30,7 @@ def _read_vrp(path:str):
         # Read main data:
         temp = np.array(f.read().splitlines())
         dim = meta_data['dimension']
-        data['NODE_COORD'] = temp[0:meta_data['dimension']]
+        data['NODE_COORD'] = temp[0:dim]
         data['DEMAND'] = temp[dim+1:2*dim+1]
         meta_data['depots'] = list(map(lambda s: s.replace('\t','') , temp[2*dim+1:3*dim+1][1:-2]))
         data = pd.DataFrame(data)
@@ -50,22 +42,72 @@ def _read_vrp(path:str):
 
     return (data, meta_data)
 
+def _get_metadata(f:TextIOWrapper):
+    meta_data = {}
+    while True:
+        line = f.readline().rstrip('\n')
+        key_val = line.split(':')
+        if(len(key_val) < 2):  # End of meta data section
+            break
+        key = re.sub(r"\s+", "", key_val[0])
+        string_value = re.search(r"(\".+\")", key_val[1])
+        if string_value:
+            value = string_value.group().replace("\"", "")
+        else:
+            value = re.sub(r"\s+", "", key_val[1])
+        meta_data[key.lower()] = value
+    return meta_data
+
+def _read_distance(path:str)->tuple([pd.DataFrame, dict]):
+    meta_data = {}
+    data = {}
+    with open(path, 'r') as f:
+        data = pd.read_csv(path, delimiter='\t', header=0, index_col=0)
+
+    return (data, meta_data)
+
 def create_random_grid(width:int=10, height:int=10, min:int=1, max:int=100):
         return np.random.choice(np.arange(min,max+1), size=(width,height))
 
-def create_random_vrp(width:int=10, height:int=10, min:int=1, max:int=100):
-        demands = create_random_grid(width, height, min, max)
+def create_random_vrp(width:int=10, height:int=10, min:int=1, max:int=100, capacity=None):
+    length = width * height
+    meta_data={}
+    meta_data['filepath'] = 'memory'
+    meta_data['name'] = f'X-n{length}k'
+    meta_data['comment'] = 'This grid was made randomly'
+    meta_data['type'] = 'CVRP'
+    meta_data['edge_weight_type'] = 'EUC_2D'
+    meta_data['dimension'] = length
+
+    demand = np.random.choice(np.arange(min,max+1), size=(length))
+    if(capacity is None): capacity = demand.mean()*4
+    meta_data['capacity'] = capacity
+
+    data = pd.DataFrame(np.arange(1,(length)+1),columns=['ID'])
+    node_coord = []
+    for y in np.arange(height):
+        for x in np.arange(width):
+            node_coord.append((x,y))
+
+    data['NODE_COORD'] = node_coord
+    data['DEMAND'] = demand
+    # TODO: randomize this column
+    data['IS_DEPOT'] = np.full(length, False)
+    return (data, meta_data)
+
 
 
 
 
 
 if __name__ == '__main__':
-    # data, meta_data = read_vrp('sample_data/X-n1001-k43.vrp')
-    # print(data)
-    # print(meta_data)
+    data, meta_data = read_file('sample_data/X-n1001-k43.vrp','cvrp')
+    print(data)
+    print(meta_data)
 
-    g = create_random_grid(10,10,10,20)
-    # g = Generators.create_random_grid()
+    g = create_random_vrp(10,10,10,20)
     print(g)
-
+    # g = Generators.create_random_grid()
+    # print(g)
+    # distance, _ = read_file('sample_data/X-n15.dist', 'dist')
+    # print(distance)
