@@ -13,6 +13,9 @@ class Node:
         # self.route = "empty"
         # self.position = "empty"
 
+    def __lt__(self, other):
+        return self.id < other.id
+
     def get_coords(self):
         return self.x_coord, self.y_coord
 
