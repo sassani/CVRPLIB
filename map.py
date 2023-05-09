@@ -25,9 +25,9 @@ class Map:
         self._import_nodes_from_df(nodes)
         # self.distances = dist.calculate_euclidean(self.nodes)
 
-    def create_random_nodes(self, width: int = 10, height: int = 10, dem_min: int = 1, dem_max: int = 100, n: int = 10, capacity=None, is_grided=False):
+    def create_random_nodes(self, width: int = 10, height: int = 10, dem_min: int = 1, dem_max: int = 100, n: int = 10, capacity=None, is_grided=False, seed=None):
         nodes, meta_data = create_random_cvrp(width, height, dem_min,
-                              dem_max, n, capacity, is_grided)
+                              dem_max, n, capacity, is_grided, seed)
         self._import_nodes_from_df(nodes)
         self.nodes_df = nodes
         self.info = meta_data

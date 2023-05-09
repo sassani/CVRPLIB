@@ -85,14 +85,18 @@ def _create_grid(width: int = 10, height: int = 10):
     return node_coord
 
 
-def create_random_cvrp(width: int = 10, height: int = 10, dem_min: int = 1, dem_max: int = 100, n: int = 10, capacity=None, is_grided=False):
-    node_coord = []
+def create_random_cvrp(width: int = 10, height: int = 10, dem_min: int = 1, dem_max: int = 100, n: int = 10, capacity=None, is_grided=False, seed=None):
+    rng = np.random.default_rng(seed=seed)
+    nodes_coord = []
     if is_grided:
-        node_coord = _create_grid(width, height)
+        nodes_coord = _create_grid(width, height)
         n = width * height
     else:
-        node_coord = sample(
-            list(product(np.random.uniform(0,width,n), np.random.uniform(0,height,n), repeat=1)), k=n)
+        l = list(product(
+            rng.random(size=n, dtype=np.float32),
+            rng.random(size=n, dtype=np.float32)))
+        rng.shuffle(l)
+        nodes_coord = l[0:n]
 
     meta_data = {}
     meta_data['filepath'] = 'memory'
@@ -102,13 +106,13 @@ def create_random_cvrp(width: int = 10, height: int = 10, dem_min: int = 1, dem_
     meta_data['edge_weight_type'] = 'EUC_2D'
     meta_data['dimension'] = n
 
-    demand = np.random.choice(np.arange(dem_min, dem_max+1), size=n)
+    demand = rng.choice(np.arange(dem_min, dem_max+1), size=n)
     if (capacity is None):
         capacity = demand.mean()*4
     meta_data['capacity'] = capacity
 
     data = pd.DataFrame(np.arange(1, n+1), columns=['ID'])
-    data['NODE_COORD'] = node_coord
+    data['NODE_COORD'] = nodes_coord
     data['DEMAND'] = demand
     # TODO: randomize this column
     data['IS_DEPOT'] = np.full(n, False)
