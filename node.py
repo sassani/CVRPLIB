@@ -10,6 +10,8 @@ class Node:
         self.y_coord = y_coord
         self.demand = demand
         self.is_depot = is_depot
+        self.neighbors = []
+        self.cluster:int = None
         # self.route = "empty"
         # self.position = "empty"
 
@@ -24,6 +26,9 @@ class Node:
 
     def get_id(self):
         return self.id
+    
+    def set_neighbors(self, neighbors:list[Node])->None:
+        self.neighbors= list(neighbors)
 
     def dist_to_other(self, other: Node, ret_squared=False):
         dist = (self.x_coord-other.x_coord)**2 + \
@@ -33,4 +38,7 @@ class Node:
         return np.sqrt(dist)
 
     def __str__(self):
-        return (str(self.id))
+        return f"""Node: {self.id}
+        Coordination: ({np.around([self.x_coord, self.y_coord],3)})
+        Demand: {self.demand}
+        Cluster: {self.cluster}"""
