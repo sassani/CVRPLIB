@@ -32,6 +32,7 @@ class Map:
         self._import_nodes_from_df(nodes)
         self.nodes_df = nodes
         self.info = meta_data
+        
 
     def _import_nodes_from_df(self, df: pd.DataFrame)->None:
         for item in df.iterrows():
@@ -44,6 +45,7 @@ class Map:
                                   demand=node.demand,
                                   id=node.id)
             self.nodes.append(node)
+        self.size = len(self.nodes)
 
     def create_net_by_distance(self, dist_matrix: str)->None:
         data, _ = read_file(dist_matrix, 'dist')

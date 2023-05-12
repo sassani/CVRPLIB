@@ -11,7 +11,7 @@ class Node:
         self.demand = demand
         self.is_depot = is_depot
         self.neighbors = []
-        self.cluster:int = None
+        self.cluster_idx:int = -1
         # self.route = "empty"
         # self.position = "empty"
 
@@ -41,4 +41,4 @@ class Node:
         return f"""Node: {self.id}
         Coordination: ({np.around([self.x_coord, self.y_coord],3)})
         Demand: {self.demand}
-        Cluster: {self.cluster}"""
+        Cluster: {self.cluster_idx}"""
