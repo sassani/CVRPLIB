@@ -17,7 +17,8 @@ class Cluster:
             _new.cluster_idx = self.idx
             for node in _new.neighbors:
                 # heapq.heappush(self.neighbors, (node.demand, node))
-                self.neighbors.append(node)
+                if node.cluster_idx == -1:
+                    self.neighbors.append(node)
 
     def remove_node(self, node:Node)->float:
         return 0
@@ -27,7 +28,7 @@ class Cluster:
     
     def __str__(self) -> str:
         return f"""Cluster: {self.idx}
-        Nodes:{str(list(n.id for n in self.nodes))}
+        Nodes:{str(sorted(list(n.id for n in self.nodes)))}
         Neighbors: {str(list(n.id for n in self.neighbors))}
         Total Demand: {self.total_demand}"""
 

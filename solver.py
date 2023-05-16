@@ -70,3 +70,19 @@ def best_candidate(cl: Cluster, opt_val: float = 0) -> Node:
         return None
     scores.sort(key=lambda x: x[0])
     return scores[0][1]
+
+
+# def maximal_dispersion(nodes:list(Node), num_points, num_iterations):
+#     # Generate initial random points
+#     points = np.random.rand(num_points, 2)  # 2D plane
+
+#     for _ in range(num_iterations):
+#         # Assign points to the nearest cluster centroid
+#         distances = np.sqrt(np.sum((points[:, np.newaxis] - points) ** 2, axis=2))
+#         assignments = np.argmin(distances, axis=1)
+
+#         # Update cluster centroids
+#         for i in range(num_points):
+#             points[i] = np.mean(points[assignments == i], axis=0)
+
+#     return points
