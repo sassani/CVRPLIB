@@ -68,20 +68,15 @@ class Map:
         self._initialize_paths_and_lengths()
         
 
-    def draw(self, size=(5, 5), show_demands=False)->None:
-        fig, ax = plt.subplots(1, 1, figsize=size)
+    def plot(self, size=(5, 5), node_label:str='id', ax=None)->None:
+        ax = ax or plt.gca()
         pos = nx.get_node_attributes(self.network, 'pos')
         colors = nx.get_node_attributes(self.network, 'color').values()
-        labels = None
-        if show_demands:
-            labels = nx.get_node_attributes(self.network, 'demand')
-        else:
-            labels = nx.get_node_attributes(self.network, 'id')
+        labels = nx.get_node_attributes(self.network, node_label)
 
-        nx.draw(self.network, pos, with_labels=False, font_weight=1)
-        nx.draw_networkx_nodes(self.network, pos, node_color=colors)
-        nx.draw_networkx_labels(self.network, pos, labels=labels)
-        plt.show()
+        nx.draw_networkx_nodes(self.network, pos, node_color=colors, ax=ax)
+        nx.draw_networkx_labels(self.network, pos, labels=labels, ax=ax)
+        nx.draw(self.network, pos, with_labels=False, font_weight=1, ax=ax)
 
     def _initialize_paths_and_lengths(self)->None:
         self.distances = pd.DataFrame.from_dict(dict(self._shortest_length_matrix())).sort_index() 
