@@ -75,14 +75,15 @@ class Map:
             self.network.add_edge(a, b, weight=a.dist_to_other(b))
         self._initialize_paths_and_lengths()
 
-    def plot(self, node_label: str = 'id', node_color:str='type', ax=None, **kwds) -> None:
+    def plot(self, node_label: str = None, node_color: str = 'type', ax=None, **kwds) -> None:
         ax = ax or plt.gca()
-        pos = dict([(n,(n.x_coord, n.y_coord)) for n in self.network.nodes])
+        pos = dict([(n, (n.x_coord, n.y_coord)) for n in self.network.nodes])
         labels_switch = {
-            'id':dict([(n, n.id) for n in self.network.nodes]), 
-            'demand':dict([(n, n.demand) for n in self.network.nodes]),
-            'cluster':dict([(n, n.cluster_idx) for n in self.network.nodes])}
-        colors_switch={
+            'id': dict([(n, n.id) for n in self.network.nodes]),
+            'demand': dict([(n, n.demand) for n in self.network.nodes]),
+            'cluster': dict([(n, n.cluster_idx) for n in self.network.nodes])
+        }
+        colors_switch = {
             'type': ['#FF0000' if n.is_depot else '#00FF36' for n in self.network.nodes],
             'cluster': [self.cluster_colors.get(n.cluster_idx, '#EEE9E9') for n in self.network.nodes]
         }
@@ -90,7 +91,7 @@ class Map:
         colors = colors_switch.get(node_color)
 
         nx.draw(self.network, pos,
-                with_labels=True,
+                with_labels=True if node_label else False,
                 labels=labels,
                 node_color=colors,
                 font_size=8, node_size=150, ax=ax, **kwds)
@@ -122,11 +123,11 @@ class Map:
     def closest_nodes(self, df_distance: pd.DataFrame):
         pass
 
-    def set_colors(self, num_clusters:int=10):
+    def set_colors(self, num_clusters: int = 10):
         # TODO: needs to be dynamic, based on the input number of clusters
-        self.cluster_colors={
+        self.cluster_colors = {
             0: '#FFFF00',
-            1: '#F5DEB3',
+            1: '#8B0000',
             2: '#FF3E96',
             3: '#8B2252',
             4: '#00C78C',
@@ -150,7 +151,7 @@ if __name__ == '__main__':
     # map.import_nodes_from_file('sample_data/X-n15.vrp', 'cvrp')
     # map.create_net_by_distance('sample_data/X-n15.dist')
     # map.create_net_by_voronoi()
-    map.plot(node_label='cluster', node_color='cluster')
+    map.plot(node_color='cluster')
     plt.show()
     # print(map.distances)
     # print('ok')
